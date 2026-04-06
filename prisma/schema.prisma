@@ -1,0 +1,58 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["popote_recipes"]
+}
+
+model Recipe {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  time        String?
+  cuisine     String?
+  budget      Int      @default(2)
+  tags        String[] @default([])
+  mealTypes   String[] @default([])
+  source      String   @default("popote")
+  sourceId    String?
+  imageUrl    String?
+  servings    Int      @default(4)
+
+  ingredients RecipeIngredient[]
+  steps       RecipeStep[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@schema("popote_recipes")
+}
+
+model RecipeIngredient {
+  id       Int    @id @default(autoincrement())
+  name     String
+  quantity String?
+  unit     String?
+  recipeId Int
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@schema("popote_recipes")
+}
+
+model RecipeStep {
+  id          Int    @id @default(autoincrement())
+  number      Int
+  description String
+  duration    Int?
+  type        String @default("prep")
+  mode        String @default("actif")
+  equipment   String?
+  recipeId    Int
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@schema("popote_recipes")
+}
