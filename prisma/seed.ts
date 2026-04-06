@@ -14,7 +14,11 @@ interface RawRecipe {
 }
 
 async function main() {
-  const jsonPath = resolve(__dirname, '../../PopoteAngular/src/assets/recipes.json')
+  // Works locally (../../PopoteAngular) and on server (../../popote)
+  let jsonPath = resolve(__dirname, '../../PopoteAngular/src/assets/recipes.json')
+  try { readFileSync(jsonPath) } catch {
+    jsonPath = resolve(__dirname, '../../popote/src/assets/recipes.json')
+  }
   const recipes: RawRecipe[] = JSON.parse(readFileSync(jsonPath, 'utf-8'))
   const first5 = recipes.slice(0, 5)
 
